@@ -1,5 +1,6 @@
 import pandas as pd
 import itertools
+import copy
 
 input_file_path = "PythonSampleData0205250.xlsx"
 output_file_path = "output.xlsx"
@@ -27,14 +28,31 @@ for customer_id in df["Customer ID"].unique():
     
     for i in range(1, n):
         amount = customer_df.iloc[i]["Amount"]
-        for j in range(len(key_value)):
+        length = len(key_value)
+        
+        temp_array = copy.deepcopy(index_array)
+        # print(f"temp array is {temp_array}")
+        for j in range(length):
             key = key_value[j]
-            if amount + key in key_value:
-                continue
-            key_value.append(key + amount)
-            index_array.append(index_array[j] + [i])
-            cnt += 1
-    
+            if amount not in key_value:
+                key_value.append(amount)
+                index_array.append([i])
+                # print(index_array)
+                cnt += 1
+            if amount + key not in key_value:
+                key_value.append(key + amount)
+                index_array.append(temp_array[j] + [i])
+                # print(f"temp is {temp_array}")
+                # print(index_array)
+                cnt += 1
+            else:
+                origin_index = key_value.index(key + amount)
+                index = key_value.index(key)
+                if index_array[origin_index][0] > index_array[index][0]:
+                    index_array[origin_index] = temp_array[j] + [i]
+                # print(temp_array)
+                # print(index_array)
+        
     print(key_value)
     print(index_array)
     print(cnt)
