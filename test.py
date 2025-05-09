@@ -60,23 +60,18 @@ def process_customer(customer_id):
     
     return group_rows
 
-# Using ThreadPoolExecutor for multi-threading
 all_group_rows = []
 with ThreadPoolExecutor() as executor:
     results = list(executor.map(process_customer, df["Customer ID"].unique()))
 
-# Flatten the list of results
 for result in results:
     all_group_rows.extend(result)
 
-# Create DataFrame from the results
 output_df = pd.DataFrame(all_group_rows)
 
-# Check columns and filter
 print(output_df.columns)
 output_df = output_df[["Customer ID", "Key Amount", "Invoice Number", "Date", "Amount"]]
 
-# Write to Excel
 with pd.ExcelWriter(output_file_path, engine="openpyxl") as writer:
     output_df.to_excel(writer, index=False, sheet_name="Output2")
 
